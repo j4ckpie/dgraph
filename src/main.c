@@ -18,7 +18,8 @@ int main(int argc, char **argv) {
         switch(opt) {
             case 'h':
                 // Display help
-                break;
+                print_help();
+                return EXIT_SUCCESS;
             case 'k':
                 // Set the amount of subgraphs
                 data->k = atoi(optarg);
@@ -33,7 +34,7 @@ int main(int argc, char **argv) {
                 break;
             case 'i':
                 // Set path to input file
-                data->filepath = optarg;
+                data->input = optarg;
                 break;
         }
     }

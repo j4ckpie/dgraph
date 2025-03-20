@@ -6,7 +6,7 @@ typedef struct userdata {
     int k;
     int x;
     char *filetype;
-    char *filepath;
+    char *input;
 } userdata;
 
 userdata* initialize_userdata();

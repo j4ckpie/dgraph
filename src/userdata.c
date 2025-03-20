@@ -20,8 +20,8 @@ userdata* initialize_userdata() {
         return NULL;
     }
 
-    data->filepath = malloc(128 * sizeof(char));
-    if(data->filepath == NULL) {
+    data->input = malloc(128 * sizeof(char));
+    if(data->input == NULL) {
         fprintf(stderr, "Błąd alokacji pamięci na dane wejściowe! Kończę działanie\n");
         return NULL;
     }
@@ -30,7 +30,7 @@ userdata* initialize_userdata() {
     data->k = 2;
     data->x = 10;
     data->filetype = "text";
-    data->filepath = "Undefined";
+    data->input = "Undefined";
 
     return data;
 }
