@@ -11,7 +11,11 @@ void print_userdata(userdata *data) {
 
 // Test user data for any mistakes
 int test_userdata(userdata *data) {
-    // Bad input
+    // Bad file input
+    if(strcmp(data->input, "Undefined") == 0) {
+        fprintf(stderr, "[!] Brak argumentu dla pliku wejściowego. Przerywam działanie.\n");
+        return 1;
+    }
     FILE *in = fopen(data->input, "r");
     if(in == NULL) {
         fprintf(stderr, "[!] Plik wejściowy nie istnieje w podanej lokalizacji. Przerywam działanie.\n");
@@ -20,7 +24,7 @@ int test_userdata(userdata *data) {
     // Get number of vertices
     char line[256];
     int n;
-    if (fgets(line, sizeof(line), in) != NULL) {
+    if(fgets(line, sizeof(line), in) != NULL) {
         sscanf(line, "%d", &n);
     } else {
         printf("[!] Plik jest pusty lub wystąpił błąd.\n");
