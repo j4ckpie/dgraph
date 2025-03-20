@@ -8,6 +8,11 @@
 #include "io.h"
 
 int main(int argc, char **argv) {
+    if(argc < 2) {
+        fprintf(stderr, "[!] Brak argumentów wejściowych. Przerywam działanie.\n");
+        return EXIT_FAILURE;
+    }
+
     int opt;
     int option_index;
 
@@ -39,7 +44,15 @@ int main(int argc, char **argv) {
         }
     }
 
+    // Test inputted data
+    if(test_userdata(data) == 1) {
+        return EXIT_FAILURE;
+    }
+
+    printf("\n");
+
+    // Summarise and print data
     print_userdata(data);
 
-    return 0;
+    return EXIT_SUCCESS;
 }

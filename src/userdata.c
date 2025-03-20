@@ -9,20 +9,20 @@ userdata* initialize_userdata() {
 
     // Check if malloc was successful
     if(data == NULL) {
-        fprintf(stderr, "Błąd alokacji pamięci na dane wejściowe! Kończę działanie\n");
+        fprintf(stderr, "[!] Błąd alokacji pamięci na dane wejściowe! Kończę działanie\n");
         return NULL;
     }
 
     // Allocate memory for filetype and filepath and check if they were successful
     data->filetype = malloc(6 * sizeof(char));
     if(data->filetype == NULL) {
-        fprintf(stderr, "Błąd alokacji pamięci na dane wejściowe! Kończę działanie\n");
+        fprintf(stderr, "[!] Błąd alokacji pamięci na dane wejściowe! Kończę działanie\n");
         return NULL;
     }
 
     data->input = malloc(128 * sizeof(char));
     if(data->input == NULL) {
-        fprintf(stderr, "Błąd alokacji pamięci na dane wejściowe! Kończę działanie\n");
+        fprintf(stderr, "[!] Błąd alokacji pamięci na dane wejściowe! Kończę działanie\n");
         return NULL;
     }
 
