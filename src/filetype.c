@@ -3,7 +3,7 @@
 
 #include "filetype.h"
 
-// Parse strin to enum
+// Parse string to enum
 FileType parse_filetype(const char *str) {
     if(strcmp(str, "text") == 0 || strcmp(str, "TEXT") == 0) {
         return TEXT;
@@ -12,4 +12,17 @@ FileType parse_filetype(const char *str) {
     } else {
         return UNKNOWN;
     }
+}
+
+// Parse enum to string
+char* filetype_to_string(FileType filetype) {
+    switch(filetype) {
+        case TEXT:
+            return "text";
+        case BINARY:
+            return "binary";
+        case UNKNOWN:
+            return "unknown";
+    }
+    return "NULL";
 }

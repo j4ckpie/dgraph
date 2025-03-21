@@ -28,15 +28,3 @@ UserData* initialize_userdata() {
 
     return data;
 }
-
-char* filetype_to_string(FileType filetype) {
-    switch(filetype) {
-        case TEXT:
-            return "text";
-        case BINARY:
-            return "binary";
-        case UNKNOWN:
-            return "unknown";
-    }
-    return "NULL";
-}

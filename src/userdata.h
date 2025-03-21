@@ -12,6 +12,5 @@ typedef struct UserData {
 } UserData;
 
 UserData* initialize_userdata();
-char* filetype_to_string();
 
 #endif
