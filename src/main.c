@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
                 break;
             case 'x':
                 // Set max percent margin
-                data->x = atoi(optarg);
+                data->x = atof(optarg);
                 break;
             case 'f':
                 // Set filetype
