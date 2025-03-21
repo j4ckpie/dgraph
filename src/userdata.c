@@ -22,7 +22,7 @@ UserData* initialize_userdata() {
 
     // Set default values
     data->k = 2;
-    data->x = 10;
+    data->x = 10.0;
     data->filetype = TEXT;
     data->input = "Undefined";
 

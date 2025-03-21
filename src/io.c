@@ -7,7 +7,7 @@
 
 // Print data from user input
 void print_userdata(UserData *data) {
-    printf("--parts k: %d\n--percent x: %d%%\n--filetype: %s\n--input: %s\n",
+    printf("--parts k: %d\n--percent x: %.2f%%\n--filetype: %s\n--input: %s\n",
         data->k, data->x, filetype_to_string(data->filetype), data->input);
 }
 
@@ -44,10 +44,10 @@ int test_userdata(UserData *data) {
 
     // Bad number of percent margin
     if(data->x <= 0) {
-        fprintf(stderr, "[!] Maksymalna procentowa różnica wielkości podgrafów musi być większa od 0. Wczytano: '%d'. Przyjęto parametr równy 10.\n", data->x);
+        fprintf(stderr, "[!] Maksymalna procentowa różnica wielkości podgrafów musi być większa od 0. Wczytano: '%.2f'. Przyjęto parametr równy 10.\n", data->x);
         data->x = 10;
     } else if(data->x > 100) {
-        fprintf(stderr, "[!] Maksymalna procentowa różnica wielkości podgrafów musi być mniejsza lub równa 100. Wczytano: '%d%%'. Przyjęto parametr równy 100.\n", data->x);
+        fprintf(stderr, "[!] Maksymalna procentowa różnica wielkości podgrafów musi być mniejsza lub równa 100. Wczytano: '%.2f%%'. Przyjęto parametr równy 100.\n", data->x);
         data->x = 100;
     }
 
