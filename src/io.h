@@ -3,8 +3,8 @@
 
 #include "userdata.h"
 
-void print_userdata(userdata *data);
-int test_userdata(userdata *data);
+void print_userdata(UserData *data);
+int test_userdata(UserData *data);
 void print_help();
 
 #endif

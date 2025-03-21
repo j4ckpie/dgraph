@@ -4,8 +4,8 @@
 #include "userdata.h"
 
 // Initalize the structure
-userdata* initialize_userdata() {
-    userdata *data = malloc(sizeof(userdata));
+UserData* initialize_userdata() {
+    UserData *data = malloc(sizeof(UserData));
 
     // Check if malloc was successful
     if(data == NULL) {
@@ -14,12 +14,6 @@ userdata* initialize_userdata() {
     }
 
     // Allocate memory for filetype and filepath and check if they were successful
-    data->filetype = malloc(6 * sizeof(char));
-    if(data->filetype == NULL) {
-        fprintf(stderr, "[!] Błąd alokacji pamięci na dane wejściowe! Kończę działanie\n");
-        return NULL;
-    }
-
     data->input = malloc(128 * sizeof(char));
     if(data->input == NULL) {
         fprintf(stderr, "[!] Błąd alokacji pamięci na dane wejściowe! Kończę działanie\n");
@@ -29,8 +23,20 @@ userdata* initialize_userdata() {
     // Set default values
     data->k = 2;
     data->x = 10;
-    data->filetype = "text";
+    data->filetype = TEXT;
     data->input = "Undefined";
 
     return data;
+}
+
+char* filetype_to_string(FileType filetype) {
+    switch(filetype) {
+        case TEXT:
+            return "text";
+        case BINARY:
+            return "binary";
+        case UNKNOWN:
+            return "unknown";
+    }
+    return "NULL";
 }
