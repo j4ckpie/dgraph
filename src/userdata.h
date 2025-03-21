@@ -6,7 +6,7 @@
 // User input data structure
 typedef struct UserData {
     int k;
-    int x;
+    double x;
     FileType filetype;
     char *input;
 } UserData;

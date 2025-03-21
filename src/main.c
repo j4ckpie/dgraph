@@ -1,14 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <getopt.h>
-#include "flags.h"
+#include <time.h>
 
+#include "flags.h"
 #include "userdata.h"
 #include "filetype.h"
 #include "io.h"
+#include "graph.h"
 
 int main(int argc, char **argv) {
+    srand(time(NULL));
     if(argc < 2) {
         fprintf(stderr, "[!] Brak argumentów wejściowych. Przerywam działanie.\n");
         return EXIT_FAILURE;
@@ -54,6 +56,26 @@ int main(int argc, char **argv) {
 
     // Summarise and print data
     print_userdata(data);
+
+    Graph *g = read_graph(data->input);
+    if(!g) {
+        fprintf(stderr, "Nie udało się wczytać grafu.\n");
+        return EXIT_FAILURE;
+    }
+    printf("Wczytano graf: n = %d, m = %d\n", g->n, g->m);
+
+    if (g->n % data->k != 0) {
+        double min_x = (100.0 * data->k) / g->n;
+        if (data->x < min_x) {
+            fprintf(stderr, "Podział nie istnieje - minimalna tolerancja to %.2f%%, a podano %.2f%%\n", min_x, data->x);
+            free_graph(g);
+            return EXIT_FAILURE;
+        }
+    }
+
+    multi_start_partition(g, data->k, data->x, 50);
+    
+    free_graph(g);
 
     return EXIT_SUCCESS;
 }

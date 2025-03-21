@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "userdata.h"
 #include "filetype.h"
@@ -67,4 +68,21 @@ void print_help() {
         "--filetype text|binary: pozwala użytkownikowi wybrać format pliku wyjściowego, "
         "w którym zostaną zapisane znalezione podgrafy (tekstowy lub binarny); domyślna wartość text;\n"
         "--input: filename określa ścieżkę do pliku wejściowego;\n");
+}
+
+int *parse_line_to_ints(char *str, const char *delim, int *count) {
+    int capacity = 10;
+    int cnt = 0;
+    int *arr = malloc(capacity * sizeof(int));
+    char *token = strtok(str, delim);
+    while(token) {
+        if(cnt >= capacity) {
+            capacity *= 2;
+            arr = realloc(arr, capacity * sizeof(int));
+        }
+        arr[cnt++] = atoi(token);
+        token = strtok(NULL, delim);
+    }
+    *count = cnt;
+    return arr;
 }
