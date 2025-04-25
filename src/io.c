@@ -11,7 +11,7 @@ void print_userdata(userdata *data) {
 }
 
 // Test user data for any mistakes
-int test_userdata(userdata *data) {
+int test_userdata(userdata *data, int n) {
     // Bad file input
     if(strcmp(data->input, "Undefined") == 0) {
         fprintf(stderr, "[!] Brak argumentu dla pliku wejściowego. Przerywam działanie.\n");
@@ -22,15 +22,6 @@ int test_userdata(userdata *data) {
         fprintf(stderr, "[!] Plik wejściowy nie istnieje w podanej lokalizacji. Przerywam działanie.\n");
         return 1;
     }
-    // Get number of vertices
-    char line[256];
-    int n;
-    if(fgets(line, sizeof(line), in) != NULL) {
-        sscanf(line, "%d", &n);
-    } else {
-        printf("[!] Plik jest pusty lub wystąpił błąd.\n");
-    }
-    fclose(in);
 
     // Bad number of parts
     if(data->k <= 0) {
@@ -43,10 +34,10 @@ int test_userdata(userdata *data) {
 
     // Bad number of percent margin
     if(data->x <= 0) {
-        fprintf(stderr, "[!] Maksymalna procentowa różnica wielkości podgrafów musi być większa od 0. Wczytano: '%d'. Przyjęto parametr równy 10.\n", data->x);
+        fprintf(stderr, "[!] Maksymalna procentowa różnica wielkości podgrafów musi być większa od 0. Wczytano: '%f'. Przyjęto parametr równy 10.\n", data->x);
         data->x = 10;
     } else if(data->x > 100) {
-        fprintf(stderr, "[!] Maksymalna procentowa różnica wielkości podgrafów musi być mniejsza lub równa 100. Wczytano: '%d%%'. Przyjęto parametr równy 100.\n", data->x);
+        fprintf(stderr, "[!] Maksymalna procentowa różnica wielkości podgrafów musi być mniejsza lub równa 100. Wczytano: '%f'. Przyjęto parametr równy 100.\n", data->x);
         data->x = 100;
     }
 

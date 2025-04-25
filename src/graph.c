@@ -6,7 +6,7 @@
 #include <string.h>
 #include <math.h>
 
-Graph* build_graph_from_hyperedges(int n, int *group, int groupCount, int *gptr, int gptrCount) {
+Graph* build_graph_from_hyperedges(int n, int *group, int *gptr, int gptrCount) {
     IntVector *adjList = malloc(n * sizeof(IntVector));
     for (int i = 0; i < n; i++) vector_init(&adjList[i]);
     int numGroups = gptrCount - 1;
@@ -54,7 +54,7 @@ Graph* read_graph(const char *filename) {
         perror("Nie można otworzyć pliku");
         exit(EXIT_FAILURE);
     }
-    char buffer[16384];
+    char buffer[1<<20];
     
     if(!fgets(buffer, sizeof(buffer), fp)) {
         fprintf(stderr, "Błąd odczytu linii 1.\n");
@@ -96,7 +96,7 @@ Graph* read_graph(const char *filename) {
     
     fclose(fp);
     
-    Graph *g = build_graph_from_hyperedges(n, group, groupCount, gptr, gptrCount);
+    Graph *g = build_graph_from_hyperedges(n, group, gptr, gptrCount);
     
     free(group);
     free(gptr);
@@ -119,8 +119,16 @@ void free_graph(Graph *g) {
 void initial_partition(Graph *g, int *part, int k, int *partSize) {
     for (int i = 0; i < k; i++)
         partSize[i] = 0;
-    for (int v = 0; v < g->n; v++) {
-        int p = v % k;
+    
+    int *order=malloc(g->n*sizeof(int));
+    for (int i = 0 ; i < g->n; i++) order[i] = i;
+    for (int i=g->n-1; i>0; i--){
+        int j=rand()%(i+1);
+        int t=order[i]; order[i]=order[j]; order[j]=t;
+    }
+    for (int i = 0; i < g->n; i++) {
+        int v = order[i];
+        int p = i % k;
         part[v] = p;
         partSize[p]++;
     }
@@ -138,7 +146,7 @@ int compute_cut_edges(Graph *g, int *part) {
     return cut / 2;
 }
 
-int valid_balance(int *partSize, int k, int avg, double x, int p, int q, int v_move) {
+int valid_balance(int *partSize, int avg, double x, int p, int q, int v_move) {
     double lower_bound = avg * (1.0 - x/100.0);
     double upper_bound = avg * (1.0 + x/100.0);
     int newSizeP = partSize[p] - v_move;
@@ -160,7 +168,7 @@ int delta_cut(Graph *g, int *part, int v, int current, int q) {
 
 // messing up with cooling rate and temperature could significantly improve the results
 void simulated_annealing_partition(Graph *g, int *part, int k, double x, int *partSize) {
-    double T = 10000.0;
+    double T = 50000.0;
     double cooling_rate = 0.999;
     int n = g->n;
     int avg = n / k;
@@ -171,8 +179,10 @@ void simulated_annealing_partition(Graph *g, int *part, int k, double x, int *pa
         int q = rand() % k;
         if(q == current)
             continue;
-        if(!valid_balance(partSize, k, avg, x, current, q, 1))
+        if(!valid_balance(partSize, avg, x, current, q, 1)){
+            T *= cooling_rate;
             continue;
+        }
         int d = delta_cut(g, part, v, current, q);
         if (d < 0 || exp(-d / T) > ((double) rand() / RAND_MAX)) {
             part[v] = q;
@@ -194,7 +204,7 @@ void local_refinement(Graph *g, int *part, int k, double x, int *partSize) {
             for (int q = 0; q < k; q++) {
                 if (q == current)
                     continue;
-                if (!valid_balance(partSize, k, avg, x, current, q, 1))
+                if (!valid_balance(partSize, avg, x, current, q, 1))
                     continue;
                 int d = delta_cut(g, part, v, current, q);
                 if (d < 0) {
@@ -208,7 +218,7 @@ void local_refinement(Graph *g, int *part, int k, double x, int *partSize) {
         }
     }
 }
-void multi_start_partition(Graph *g, int k, double x, int num_starts) {
+void multi_start_partition(Graph *g, int k, double x, int num_starts, const char *filename) {
     int n = g->n;
     int best_cut = 1e9;
     int *best_partition = malloc(n * sizeof(int));
@@ -216,6 +226,7 @@ void multi_start_partition(Graph *g, int k, double x, int num_starts) {
     int *current_partSize = malloc(k * sizeof(int));
     for (int start = 0; start < num_starts; start++) {
         initial_partition(g, current_part, k, current_partSize);
+        if(rand() % 3 == 0) local_refinement(g, current_part, k, x, current_partSize);
         simulated_annealing_partition(g, current_part, k, x, current_partSize);
         local_refinement(g, current_part, k, x, current_partSize);
         int cut = compute_cut_edges(g, current_part);
@@ -225,9 +236,13 @@ void multi_start_partition(Graph *g, int k, double x, int num_starts) {
         }
     }
     printf("Najlepszy podział: %d krawędzi przecinanych\n", best_cut);
-    // for (int i = 0; i < n; i++) {
-    //     printf("Wierzchołek %d -> część %d\n", i, best_partition[i]);
-    // }
+    
+    FILE *plik = fopen(filename, "a");
+    fprintf(plik, "\n\n");
+    for (int i = 0; i < n; i++) {
+        fprintf(plik,"%d ", best_partition[i]);
+    }
+    fclose(plik);
     free(best_partition);
     free(current_part);
     free(current_partSize);
