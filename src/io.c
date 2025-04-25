@@ -3,11 +3,12 @@
 #include <stdlib.h>
 
 #include "userdata.h"
+#include "filetype.h"
 
 // Print data from user input
-void print_userdata(userdata *data) {
+void print_userdata(UserData *data) {
     printf("--parts k: %d\n--percent x: %.2f%%\n--filetype: %s\n--input: %s\n",
-        data->k, data->x, data->filetype, data->input);
+        data->k, data->x, filetype_to_string(data->filetype), data->input);
 }
 
 // Test user data for any mistakes
@@ -42,9 +43,9 @@ int test_userdata(userdata *data, int n) {
     }
 
     // Bad filetype
-    if(strcmp(data->filetype, "text") != 0 && strcmp(data->filetype, "binary") != 0) {
+    if(data->filetype == UNKNOWN) {
         fprintf(stderr, "[!] Podany format zapisu nie jest prawidłowy. Przyjęto domyślną wartość 'text'.\n");
-        data->filetype = "text";
+        data->filetype = TEXT;
     }
 
     return 0;

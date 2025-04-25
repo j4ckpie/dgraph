@@ -1,14 +1,16 @@
 #ifndef USERDATA_H
 #define USERDATA_H
 
+#include "filetype.h"
+
 // User input data structure
-typedef struct userdata {
+typedef struct UserData {
     int k;
     double x;
-    char *filetype;
+    FileType filetype;
     char *input;
-} userdata;
+} UserData;
 
-userdata* initialize_userdata();
+UserData* initialize_userdata();
 
 #endif
