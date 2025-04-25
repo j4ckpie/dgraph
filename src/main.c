@@ -47,8 +47,14 @@ int main(int argc, char **argv) {
         }
     }
 
+    Graph *g = read_graph(data->input);
+    if(!g) {
+        fprintf(stderr, "Nie udało się wczytać grafu.\n");
+        return EXIT_FAILURE;
+    }
+
     // Test inputted data
-    if(test_userdata(data) == 1) {
+    if(test_userdata(data, g->n) == 1) {
         return EXIT_FAILURE;
     }
 
@@ -57,11 +63,6 @@ int main(int argc, char **argv) {
     // Summarise and print data
     print_userdata(data);
 
-    Graph *g = read_graph(data->input);
-    if(!g) {
-        fprintf(stderr, "Nie udało się wczytać grafu.\n");
-        return EXIT_FAILURE;
-    }
     printf("Wczytano graf: n = %d, m = %d\n", g->n, g->m);
 
     if (g->n % data->k != 0) {
@@ -73,7 +74,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    multi_start_partition(g, data->k, data->x, 50);
+    multi_start_partition(g, data->k, data->x, 500/data->k + 200000/g->n + 1, data->input);
     
     free_graph(g);
 
