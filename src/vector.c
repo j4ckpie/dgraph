@@ -1,5 +1,4 @@
 #include "vector.h"
-
 #include <stdlib.h>
 
 void vector_init(IntVector *vec) {

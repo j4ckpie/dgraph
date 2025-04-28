@@ -12,7 +12,7 @@ void print_userdata(UserData *data) {
 }
 
 // Test user data for any mistakes
-int test_userdata(userdata *data, int n) {
+int test_userdata(UserData *data, int n) {
     // Bad file input
     if(strcmp(data->input, "Undefined") == 0) {
         fprintf(stderr, "[!] Brak argumentu dla pliku wejściowego. Przerywam działanie.\n");
