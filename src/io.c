@@ -4,6 +4,7 @@
 
 #include "userdata.h"
 #include "filetype.h"
+#include "graph.h"
 
 // Print data from user input
 void print_userdata(UserData *data) {
@@ -59,6 +60,46 @@ void print_help() {
         "--filetype text|binary: pozwala użytkownikowi wybrać format pliku wyjściowego, "
         "w którym zostaną zapisane znalezione podgrafy (tekstowy lub binarny); domyślna wartość text;\n"
         "--input: filename określa ścieżkę do pliku wejściowego;\n");
+}
+
+// Write to file
+void write_output(UserData *data, Graph *g, int *best_partition) {  
+    int n = g->n;
+    char *filetype = "a";
+    char out_file[512];
+    char out_path[512];
+    char *ext = strrchr(data->input, '.');
+    if(ext) {
+        int len = ext - data->input;
+        strncpy(out_file, data->input, len);
+        out_file[len] = '\0';
+
+        if(data->filetype == TEXT) {
+            strcat(out_file, ".txt");
+            filetype = "a";
+        }
+        else {
+            strcat(out_file, ".bin");
+            filetype = "ab";
+        }
+
+        if (strncmp(out_file, "data/", 5) == 0) {
+            sprintf(out_path, "out/%s", out_file + 5);
+        }
+    }
+    FILE *out = fopen(out_path, filetype);
+    if(!out) {
+        perror("Nie można otworzyć pliku");
+        exit(EXIT_FAILURE);
+    }
+    //free(filetype);
+
+    fprintf(out, "\n\n");
+    for (int i = 0; i < n; i++) {
+        fprintf(out, "%d ", best_partition[i]);
+    }
+
+    fclose(out);
 }
 
 int *parse_line_to_ints(char *str, const char *delim, int *count) {

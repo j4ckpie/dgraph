@@ -47,23 +47,58 @@ Graph* build_graph_from_hyperedges(int n, int *group, int *gptr, int gptrCount) 
     return g;
 }
 
-Graph* read_graph(const char *filename) {
-    FILE *fp = fopen(filename, "r");
+Graph* read_graph(UserData *data) {
+    FILE *fp = fopen(data->input, "r");
     if(!fp) {
         perror("Nie można otworzyć pliku");
         exit(EXIT_FAILURE);
     }
+
+    // Open new file to copy to
+    char out_file[512];
+    char out_path[512];
+    char *filetype = "w";
+    char *ext = strrchr(data->input, '.');
+    if(ext) {
+        int len = ext - data->input;
+        strncpy(out_file, data->input, len);
+        out_file[len] = '\0';
+
+        if(data->filetype == TEXT) {
+            strcat(out_file, ".txt");
+            filetype = "w";
+        }
+        else {
+            strcat(out_file, ".bin");
+            filetype = "wb";
+        }
+
+        if (strncmp(out_file, "data/", 5) == 0) {
+            sprintf(out_path, "out/%s", out_file + 5);
+        }
+    }
+    FILE *out = fopen(out_path, filetype);
+    if(!out) {
+        perror("Nie można otworzyć pliku");
+        exit(EXIT_FAILURE);
+    }
+
+    // Read graph
+
     char buffer[1<<20];
     
     if(!fgets(buffer, sizeof(buffer), fp)) {
         fprintf(stderr, "Błąd odczytu linii 1.\n");
         exit(EXIT_FAILURE);
     }
+    fputs(buffer, out);
     
     if(!fgets(buffer, sizeof(buffer), fp)) {
         fprintf(stderr, "Błąd odczytu linii 2.\n");
         exit(EXIT_FAILURE);
     }
+    fputs(buffer, out);
+    
     buffer[strcspn(buffer, "\n")] = 0;
     int vertexCount;
     int *vertexTokens = parse_line_to_ints(buffer, ";\n", &vertexCount);
@@ -74,11 +109,14 @@ Graph* read_graph(const char *filename) {
         fprintf(stderr, "Błąd odczytu linii 3.\n");
         exit(EXIT_FAILURE);
     }
+    fputs(buffer, out);
     
     if(!fgets(buffer, sizeof(buffer), fp)) {
         fprintf(stderr, "Błąd odczytu linii 4.\n");
         exit(EXIT_FAILURE);
     }
+    fputs(buffer, out);
+
     buffer[strcspn(buffer, "\n")] = 0;
     int groupCount;
     int *group = parse_line_to_ints(buffer, ";\n", &groupCount);
@@ -87,11 +125,14 @@ Graph* read_graph(const char *filename) {
         fprintf(stderr, "Błąd odczytu linii 5.\n");
         exit(EXIT_FAILURE);
     }
+    fputs(buffer, out);
+
     buffer[strcspn(buffer, "\n")] = 0;
     int gptrCount;
     int *gptr = parse_line_to_ints(buffer, ";\n", &gptrCount);
     
     fclose(fp);
+    fclose(out);
     
     Graph *g = build_graph_from_hyperedges(n, group, gptr, gptrCount);
     
@@ -216,7 +257,7 @@ void local_refinement(Graph *g, int *part, int k, double x, int *partSize) {
         }
     }
 }
-void multi_start_partition(Graph *g, int k, double x, int num_starts, const char *filename) {
+int* multi_start_partition(Graph *g, int k, double x, int num_starts) {
     int n = g->n;
     int best_cut = 1e9;
     int *best_partition = malloc(n * sizeof(int));
@@ -235,13 +276,7 @@ void multi_start_partition(Graph *g, int k, double x, int num_starts, const char
     }
     printf("Najlepszy podział: %d krawędzi przecinanych\n", best_cut);
     
-    FILE *plik = fopen(filename, "a");
-    fprintf(plik, "\n\n");
-    for (int i = 0; i < n; i++) {
-        fprintf(plik,"%d ", best_partition[i]);
-    }
-    fclose(plik);
-    free(best_partition);
     free(current_part);
     free(current_partSize);
+    return best_partition;
 }

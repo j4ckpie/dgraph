@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    Graph *g = read_graph(data->input);
+    Graph *g = read_graph(data);
     if(!g) {
         fprintf(stderr, "Nie udało się wczytać grafu.\n");
         return EXIT_FAILURE;
@@ -74,7 +74,10 @@ int main(int argc, char **argv) {
         }
     }
 
-    multi_start_partition(g, data->k, data->x, 500/data->k + 200000/g->n + 1, data->input);
+    int* best_partition = multi_start_partition(g, data->k, data->x, 500/data->k + 200000/g->n + 1);
+    if(best_partition != NULL ) {
+        write_output(data, g, best_partition);
+    }
     
     free_graph(g);
 
