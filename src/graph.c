@@ -22,7 +22,6 @@ Graph* build_graph_from_hyperedges(int n, int *group, int *gptr, int gptrCount) 
             }
         }
     }
-    
     int totalEdges = 0;
     for (int i = 0; i < n; i++) {
         totalEdges += adjList[i].size;
@@ -30,7 +29,7 @@ Graph* build_graph_from_hyperedges(int n, int *group, int *gptr, int gptrCount) 
     
     Graph *g = malloc(sizeof(Graph));
     g->n = n;
-    g->m = totalEdges;
+    g->m = totalEdges / 2;
     g->row = malloc((n+1) * sizeof(int));
     g->col = malloc(totalEdges * sizeof(int));
     
@@ -83,8 +82,6 @@ Graph* read_graph(const char *filename) {
     buffer[strcspn(buffer, "\n")] = 0;
     int groupCount;
     int *group = parse_line_to_ints(buffer, ";\n", &groupCount);
-    
-    // !!! TODO: HANDLE MULTIPLE "LINE 5" !!!
 
     if(!fgets(buffer, sizeof(buffer), fp)) {
         fprintf(stderr, "Błąd odczytu linii 5.\n");
@@ -139,11 +136,11 @@ int compute_cut_edges(Graph *g, int *part) {
     for (int v = 0; v < g->n; v++) {
         for (int i = g->row[v]; i < g->row[v+1]; i++) {
             int u = g->col[i];
-            if (part[v] != part[u])
+            if (part[v] != part[u] && u > v)
                 cut++;
         }
     }
-    return cut / 2;
+    return cut;
 }
 
 int valid_balance(int *partSize, int avg, double x, int p, int q, int v_move) {
@@ -179,8 +176,9 @@ void simulated_annealing_partition(Graph *g, int *part, int k, double x, int *pa
         int q = rand() % k;
         if(q == current)
             continue;
+        T *= cooling_rate;
+        if(partSize[current] == 1) continue;
         if(!valid_balance(partSize, avg, x, current, q, 1)){
-            T *= cooling_rate;
             continue;
         }
         int d = delta_cut(g, part, v, current, q);
@@ -189,7 +187,6 @@ void simulated_annealing_partition(Graph *g, int *part, int k, double x, int *pa
             partSize[current]--;
             partSize[q]++;
         }
-        T *= cooling_rate;
     }
 }
 
@@ -208,6 +205,7 @@ void local_refinement(Graph *g, int *part, int k, double x, int *partSize) {
                     continue;
                 int d = delta_cut(g, part, v, current, q);
                 if (d < 0) {
+                    if(partSize[current] == 1) continue;
                     part[v] = q;
                     partSize[current]--;
                     partSize[q]++;
