@@ -52,4 +52,4 @@ Here's an example:
 This command will launch the program, partitioning graph1.csrrg into k = 2 parts (the default --parts value). The maximum allowed size difference between these parts will be x = 15%. The results will be saved to a file named graph1.txt, as the default --filetype is text. All arguments can be provided in any order.
 
 ## Authors
-Created by Jakub Pietrala & Bartosz Starzyński.
+Developed by Jakub Pietrala & Bartosz Starzyński.
